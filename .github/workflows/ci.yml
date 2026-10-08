@@ -11,7 +11,7 @@ concurrency:
 jobs:
   compose:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -40,7 +40,7 @@ jobs:
 
   smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     needs: compose
     steps:
       - uses: actions/checkout@v4
