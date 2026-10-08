@@ -1,13 +1,17 @@
 name: ci
 
 on:
-  push:
-    branches: [develop, qa, main]
   pull_request:
+    branches: [develop, qa]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.repository }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   compose:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -36,6 +40,7 @@ jobs:
 
   smoke:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: compose
     steps:
       - uses: actions/checkout@v4
