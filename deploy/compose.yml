@@ -1,0 +1,26 @@
+# NGINX entry (Anexo J / ADR-006). No database. Presence check only.
+# Same COMPOSE_PROJECT_NAME as drp-infra-postgres so DNS names resolve
+# on drp-dev_default (identity-api, space-api, …).
+#
+# Start the engine first, then this file:
+#   docker compose --env-file env/dev.env -f deploy/compose.yml up -d
+
+name: ${COMPOSE_PROJECT_NAME:-drp-dev}
+
+services:
+  api-gateway:
+    image: nginx:1.27-alpine
+    container_name: ${GATEWAY_CONTAINER:-drp-gateway-dev}
+    ports:
+      - "${GATEWAY_PORT:-8080}:8080"
+    volumes:
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../nginx/conf.d:/etc/nginx/conf.d:ro
+      - ../nginx/routes:/etc/nginx/routes:ro
+      - ../nginx/snippets:/etc/nginx/snippets:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/health | grep -q '\"status\":\"ok\"'"]
+      interval: 5s
+      timeout: 3s
+      retries: 8
+    restart: unless-stopped
