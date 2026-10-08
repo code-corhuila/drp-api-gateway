@@ -23,3 +23,22 @@ branch into another: `merge develop -> qa` and `merge qa -> main` do not exist i
 rule.
 
 Full policy: `00-governance/branching-policy.md` in `drp-docs`.
+
+## What this repo is
+
+NGINX on **:8080** (dev). Credential **presence** only. Each `-api` validates RS256. No Go BFF.
+
+Public: `GET /health`, `POST /api/v1/auth/login`, `GET /api/v1/auth/jwks`.  
+Everything else under `/api/v1` needs `Authorization`. Inbound `X-User-*` is stripped.
+
+Availability routes (`/api/v1/spaces/available` and `…/availability`) are declared **before** the spaces prefix.
+
+Start from the same Compose project as [`drp-infra-postgres`](https://github.com/code-corhuila/drp-infra-postgres) so upstream DNS names resolve. Corte 2 `drp-front` still defaults to `failover` if this process is down.
+
+```bash
+cp env/dev.env.example env/dev.env
+docker compose --env-file env/dev.env -f deploy/compose.yml up -d
+curl http://localhost:8080/health
+```
+
+Expected: `{"status":"ok","timestamp":"…"}`. A protected path without a header returns `{error, message, traceId}` with **401**.
