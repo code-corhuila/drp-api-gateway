@@ -26,6 +26,12 @@ jobs:
       - name: nginx -t
         run: |
           docker run --rm \
+            --add-host identity-api:127.0.0.1 \
+            --add-host space-api:127.0.0.1 \
+            --add-host reservation-api:127.0.0.1 \
+            --add-host payment-api:127.0.0.1 \
+            --add-host notification-api:127.0.0.1 \
+            --add-host availability-api:127.0.0.1 \
             -v "$PWD/nginx/nginx.conf:/etc/nginx/nginx.conf:ro" \
             -v "$PWD/nginx/conf.d:/etc/nginx/conf.d:ro" \
             -v "$PWD/nginx/routes:/etc/nginx/routes:ro" \
